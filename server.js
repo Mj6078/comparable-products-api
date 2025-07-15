@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 
-const API_TOKEN = 'mjbxeo6uw4h6nelxarkeild0ikqbtnh';
+const API_TOKEN = process.env.API_TOKEN;
 const STORE_HASH = '6yvytzf4lr';
 
 app.use(cors());
