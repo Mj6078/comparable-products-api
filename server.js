@@ -2,14 +2,13 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
+app.use(cors());
 
 const API_TOKEN = process.env.API_TOKEN;
 const STORE_HASH = '6yvytzf4lr';
 
-app.use(cors());
-
 app.get('/', (req, res) => {
-  res.send('✅ Server is running! Use /comparable-products?skus=s0001,s0002');
+  res.send('✅ Vercel-compatible serverless API is working.');
 });
 
 app.get('/comparable-products', async (req, res) => {
@@ -23,15 +22,13 @@ app.get('/comparable-products', async (req, res) => {
       headers: {
         'X-Auth-Token': API_TOKEN,
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       }
     });
 
     const data = await response.json();
 
-    if (!data.data || data.data.length === 0) {
-      return res.json([]);
-    }
+    if (!data.data) return res.json([]);
 
     const result = data.data.map(p => {
       const customFields = p.custom_fields || [];
@@ -59,7 +56,10 @@ app.get('/comparable-products', async (req, res) => {
 
     res.json(result);
   } catch (err) {
-    console.error("❌ Server error:", err);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    console.error("❌ API failed:", err);
+    res.status(500).json({ error: 'API fetch error' });
   }
 });
+
+// ❌ DO NOT use app.listen() on Vercel
+module.exports = app;
