@@ -1,5 +1,4 @@
 const express = require('express');
-const fetch = require('node-fetch');
 const cors = require('cors');
 
 const app = express();
@@ -18,7 +17,6 @@ app.get('/comparable-products', async (req, res) => {
   if (!skuQuery) return res.status(400).json({ error: 'Missing skus query param' });
 
   const url = `https://api.bigcommerce.com/stores/${STORE_HASH}/v3/catalog/products?sku:in=${skuQuery}&include=custom_fields,primary_image`;
-  console.log("📡 Fetching from:", url);
 
   try {
     const response = await fetch(url, {
@@ -32,18 +30,16 @@ app.get('/comparable-products', async (req, res) => {
     const data = await response.json();
 
     if (!data.data || data.data.length === 0) {
-      console.log("🚫 No products found for:", skuQuery);
       return res.json([]);
     }
 
     const result = data.data.map(p => {
       const customFields = p.custom_fields || [];
-
       const unit = customFields.find(f => f.name === 'per-unit-price-1');
       const qty = customFields.find(f => f.name === 'quantity');
       const bulkQty = customFields.find(f => f.name === 'bulk-quantity');
       const bulkPrice = customFields.find(f => f.name === 'bulk-price');
-      const bulkPrice1 = customFields.find(f => f.name === 'bulk-price1'); // Sale bulk price
+      const bulkPrice1 = customFields.find(f => f.name === 'bulk-price1');
 
       return {
         id: p.id,
@@ -61,13 +57,9 @@ app.get('/comparable-products', async (req, res) => {
       };
     });
 
-    console.log("✅ Products found:", result.map(r => r.sku));
     res.json(result);
   } catch (err) {
     console.error("❌ Server error:", err);
     res.status(500).json({ error: 'Failed to fetch products' });
   }
 });
-
-const PORT = process.env.PORT || 1988;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
