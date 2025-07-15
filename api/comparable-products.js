@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
 
   if (!skus) return res.status(400).json({ error: 'Missing skus query param' });
 
-  const url = `https://api.bigcommerce.com/stores/${STORE_HASH}/v3/catalog/products?sku:in=${skus}&include=custom_fields,primary_image`;
+  const url = `https://api.bigcommerce.com/stores/${STORE_HASH}/v3/catalog/products?sku:in=${skuQuery}&include=custom_fields,primary_image`;
 
   try {
     const response = await fetch(url, {
