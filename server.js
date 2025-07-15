@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 
-const API_TOKEN = process.env.API_TOKEN;
+const API_TOKEN = 'mjbxeo6uw4h6nelxarkeild0ikqbtnh';
 const STORE_HASH = '6yvytzf4lr';
 
 app.use(cors());
@@ -17,7 +17,7 @@ app.get('/comparable-products', async (req, res) => {
   const skuQuery = req.query.skus;
   if (!skuQuery) return res.status(400).json({ error: 'Missing skus query param' });
 
-  const url = \`https://api.bigcommerce.com/stores/\${STORE_HASH}/v3/catalog/products?sku:in=\${skuQuery}&include=custom_fields,primary_image\`;
+  const url = `https://api.bigcommerce.com/stores/${STORE_HASH}/v3/catalog/products?sku:in=${skuQuery}&include=custom_fields,primary_image`;
   console.log("📡 Fetching from:", url);
 
   try {
@@ -43,7 +43,7 @@ app.get('/comparable-products', async (req, res) => {
       const qty = customFields.find(f => f.name === 'quantity');
       const bulkQty = customFields.find(f => f.name === 'bulk-quantity');
       const bulkPrice = customFields.find(f => f.name === 'bulk-price');
-      const bulkPrice1 = customFields.find(f => f.name === 'bulk-price1');
+      const bulkPrice1 = customFields.find(f => f.name === 'bulk-price1'); // Sale bulk price
 
       return {
         id: p.id,
@@ -69,5 +69,5 @@ app.get('/comparable-products', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(\`🚀 Server running on port \${PORT}\`));
+const PORT = process.env.PORT || 1988;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
